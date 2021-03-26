@@ -1,10 +1,12 @@
 import { TextProps as RNTextProps } from "react-native";
 import styled from "styled-components/native";
 import {
+  space,
   typography,
   color,
   variant,
   layout,
+  SpaceProps,
   TypographyProps,
   ColorProps,
   LayoutProps,
@@ -23,12 +25,14 @@ export enum TextVariants {
 }
 
 export type TextProps = RNTextProps &
+  SpaceProps &
   TypographyProps &
   ColorProps &
   LayoutProps &
   VariantProps;
 
 export const Text = styled.Text<TextProps>`
+  ${space}
   ${typography}
   ${color}
   ${layout}
