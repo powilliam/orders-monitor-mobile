@@ -1,23 +1,16 @@
 import React from "react";
-import { StatusBar } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
 
 import { AppProvider } from "app/shared/contexts/app";
 
-import { ScreenWrapper } from "app/shared/components/screen-wrapper";
-import { Text } from "app/shared/components/text";
-
-import { theme } from "app/shared/themes/light";
+import { OrdersModule } from "app/orders/orders-module";
 
 export function AppModule() {
   return (
     <AppProvider>
-      <ScreenWrapper alignItems="center" justifyContent="center" p="16px">
-        <StatusBar backgroundColor={theme.primary} barStyle="light-content" />
-
-        <Text fontSize="16px" letterSpacing="0.4px">
-          app-module
-        </Text>
-      </ScreenWrapper>
+      <NavigationContainer>
+        <OrdersModule />
+      </NavigationContainer>
     </AppProvider>
   );
 }
