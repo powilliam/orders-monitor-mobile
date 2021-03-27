@@ -7,5 +7,7 @@ declare module "styled-components" {
     secondary?: string;
     onSecondary?: string;
     background?: string;
+    error?: string;
+    surface?: string;
   }
 }
