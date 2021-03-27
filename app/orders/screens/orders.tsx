@@ -7,6 +7,7 @@ import Reanimated, {
   useAnimatedStyle,
   withTiming,
 } from "react-native-reanimated";
+import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "styled-components";
 
 import { ScreenWrapper } from "app/shared/components/screen-wrapper";
@@ -25,6 +26,7 @@ export function OrdersScreen() {
   );
 
   const { background } = useTheme();
+  const navigation = useNavigation();
 
   const [orders, setOrders] = useState<OrderCardProps[]>([
     { identifier: "123321", delivery: "01/04/21", status: "PENDENTE" },
@@ -96,7 +98,10 @@ export function OrdersScreen() {
       )}
 
       <Column p="16px">
-        <Button text="Register new order" />
+        <Button
+          text="Register new order"
+          onPress={() => navigation.navigate("RegisterOrder")}
+        />
       </Column>
     </ScreenWrapper>
   );
