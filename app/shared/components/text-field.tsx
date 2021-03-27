@@ -45,4 +45,5 @@ export const TextFieldBase = styled.TextInput`
   font-size: 16px;
   letter-spacing: 0.6px;
   color: #000;
+  font-family: Roboto-Medium;
 `;
