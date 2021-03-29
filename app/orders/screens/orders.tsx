@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StatusBar } from "react-native";
 import Reanimated, {
   useSharedValue,
@@ -7,8 +7,10 @@ import Reanimated, {
   useAnimatedStyle,
   withTiming,
 } from "react-native-reanimated";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
 import { useTheme } from "styled-components";
+
+import { useDatabase } from "app/shared/contexts/database";
 
 import { ScreenWrapper } from "app/shared/components/screen-wrapper";
 import { Text, TextVariants } from "app/shared/components/text";
@@ -26,21 +28,13 @@ export function OrdersScreen() {
   );
 
   const { background } = useTheme();
+  const { instance } = useDatabase();
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
 
-  const [orders, setOrders] = useState<OrderCardProps[]>([
-    { identifier: "123321", delivery: "01/04/21", status: "PENDENTE" },
-    { identifier: "123322", delivery: "01/04/21", status: "PENDENTE" },
-    { identifier: "123323", delivery: "01/04/21", status: "PENDENTE" },
-    { identifier: "123324", delivery: "01/04/21", status: "PENDENTE" },
-    { identifier: "123325", delivery: "01/04/21", status: "PENDENTE" },
-  ]);
+  const [orders, setOrders] = useState<OrderCardProps[]>([]);
 
   const hasOrders = orders.length > 0;
-
-  function onDeleteOrder(identifier: string) {
-    setOrders(() => orders.filter((it) => it.identifier !== identifier));
-  }
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: ({ contentOffset: { y } }) => {
@@ -58,6 +52,30 @@ export function OrdersScreen() {
     backgroundColor: background,
     elevation: toolbarElevation.value,
   }));
+
+  function onDeleteOrder(order: OrderCardProps) {
+    instance?.transaction((transtaction) => {
+      transtaction.executeSql(
+        `
+        DELETE FROM ORDERS WHERE identifier = ?
+      `,
+        [order.identifier]
+      );
+    });
+    setOrders(orders.filter((it) => it.identifier !== order.identifier));
+  }
+
+  useEffect(() => {
+    if (!isFocused) return () => {};
+    async function getOrdersFromDatabase() {
+      instance?.transaction((transaction) => {
+        transaction.executeSql(`SELECT * FROM ORDERS`, [], (_, results) => {
+          setOrders(results.rows.raw());
+        });
+      });
+    }
+    getOrdersFromDatabase();
+  }, [isFocused]);
 
   return (
     <ScreenWrapper>
@@ -90,7 +108,7 @@ export function OrdersScreen() {
           {orders.map((it) => (
             <OrderCard
               key={it.identifier}
-              onDelete={() => onDeleteOrder(it.identifier)}
+              onDelete={() => onDeleteOrder(it)}
               {...it}
             />
           ))}
