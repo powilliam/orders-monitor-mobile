@@ -4,6 +4,8 @@ import { useNavigation } from "@react-navigation/native";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
+import { useDatabase } from "app/shared/contexts/database";
+
 import { ScreenWrapper } from "app/shared/components/screen-wrapper";
 import { Column } from "app/shared/components/column";
 import { Row } from "app/shared/components/row";
@@ -21,6 +23,7 @@ interface RegisterOrderFormData {
 }
 
 export function RegisterOrderScreen() {
+  const { instance } = useDatabase();
   const navigation = useNavigation();
 
   const { control, handleSubmit, errors } = useForm<RegisterOrderFormData>({
@@ -28,7 +31,16 @@ export function RegisterOrderScreen() {
   });
 
   function onSubmit(data: RegisterOrderFormData) {
-    console.log(data);
+    instance
+      ?.transaction((transtaction) => {
+        transtaction.executeSql(
+          `
+        INSERT INTO ORDERS (hash, identifier) VALUES (?, ?)
+      `,
+          [data.hash, data.identifier]
+        );
+      })
+      .finally(() => navigation.goBack());
   }
 
   return (
