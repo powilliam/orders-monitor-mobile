@@ -17,7 +17,9 @@ import { Text, TextVariants } from "app/shared/components/text";
 import { Column } from "app/shared/components/column";
 import { Button } from "app/shared/components/button";
 
-import { OrderCard, OrderCardProps } from "app/orders/components/order-card";
+import { OrderCard } from "app/orders/components/order-card";
+
+import { Order } from "app/shared/models/order";
 
 const MINIMUM_Y_OFFSET = 15;
 
@@ -32,7 +34,7 @@ export function OrdersScreen() {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
 
-  const [orders, setOrders] = useState<OrderCardProps[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
 
   const hasOrders = orders.length > 0;
 
@@ -53,16 +55,16 @@ export function OrdersScreen() {
     elevation: toolbarElevation.value,
   }));
 
-  function onDeleteOrder(order: OrderCardProps) {
+  function onDeleteOrder(order: Order) {
     instance?.transaction((transtaction) => {
       transtaction.executeSql(
         `
-        DELETE FROM ORDERS WHERE identifier = ?
+        DELETE FROM ORDERS WHERE id = ?
       `,
-        [order.identifier]
+        [order.id]
       );
     });
-    setOrders(orders.filter((it) => it.identifier !== order.identifier));
+    setOrders(orders.filter((it) => it.id !== order.id));
   }
 
   useEffect(() => {
@@ -107,7 +109,7 @@ export function OrdersScreen() {
         >
           {orders.map((it) => (
             <OrderCard
-              key={it.identifier}
+              key={it.id?.toString()}
               onDelete={() => onDeleteOrder(it)}
               {...it}
             />
