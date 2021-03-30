@@ -53,7 +53,7 @@ export function DatabaseProvider({ children }: DatabaseProviderProps) {
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               hash TEXT NOT NULL,
               identifier TEXT NOT NULL,
-              delivery TEXT,
+              entrega TEXT,
               status TEXT
             )
           `
